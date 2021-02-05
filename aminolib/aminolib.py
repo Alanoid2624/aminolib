@@ -4,7 +4,7 @@ import websocket, requests
 from time import time, sleep
 from threading import Thread
 
-deviceId = "015051B67B8D59D0A86E0F4A78F47367B749357048DD5F23DF275F05016B74605AAB0D7A6127287D9C"
+deviceId = "" #fill this.
 
 class Socket:
     def __init__(self, client):
@@ -320,17 +320,29 @@ class Amino:
             verify=self.verify, headers=self.headers, proxies=self.proxies).json()
         return result
     
-    # def start_chat(self, comId: str = None, userId: [str, list] = None, message: str = None, title: str = None, content: str = None):
-    #     if isinstance(userId, list): userIds = userId
-    #     elif isinstance(userId, str): userIds = [userId]
-    #     else: pass
+    def start_chat(self, userId: [str, list], comId: str = None, message: str = None, title: str = None, content: str = None):
+        if isinstance(userId, str): userIds = [userId]
+        elif isinstance(userId, list): userIds = userId
+        else: pass
 
-    #     data = {"title": title, "inviteeUids": userIds, "initialMessageContent": message,
-    #     "content": content, "type": 0, "publishToGlobal": 0,"timestamp": int(time() * 1000)}
-    #     result = requests.post(f"{self.api}x{comId}/s/chat/thread", data=json.dumps(data), verify=self.verify, headers=self.headers, proxies=self.proxies).json()
-    #     return result
-    def start_chat(self, comId: str = None, userId: [str, list] = None, message: str = None, title: str = None, content: str = None):
-        pass
+        data = {
+            "title": title,
+            "inviteeUids": userIds,
+            "initialMessageContent": message,
+            "content": content,
+            "type": 0,
+            "publishToGlobal": 0,
+            "timestamp": int(time() * 1000)
+        }
+
+        if comId is not None:
+            result = requests.post(f"{self.api}x{comId}/s/chat/thread",
+            data=json.dumps(data), verify=self.verify, headers=self.headers, proxies=self.proxies)
+        else:
+            result = requests.post(f"{self.api}g/s/chat/thread",
+            data=json.dumps(data), verify=self.verify, headers=self.headers, proxies=self.proxies)
+        print(result.status_code)
+        return result.status_code
 
     def leave_chat(self, comId: str = None, chatId: str = None):
         if comId:
